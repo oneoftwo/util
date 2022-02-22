@@ -1,1 +1,2 @@
-# custom_util
+# Utilities for cheminformatics
+
