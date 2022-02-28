@@ -1,12 +1,15 @@
 import torch
 from torch_geometric.data import Data
+
 from rdkit import Chem
 from rdkit.Chem.rdmolops import RemoveHs
-import mol_to_graph as MOLTOGRAPH 
-import mol_to_3d as MOLTO3D
+
+from . import mol_to_graph as MOLTOGRAPH 
+from . import mol_to_3d as MOLTO3D
 
 
-def mol_to_edge_index_and_edge_attr(mol): # TODO: accelerate
+def mol_to_edge_index_and_edge_attr(mol): 
+    # TODO: accelerate
     adj = MOLTOGRAPH.mol_to_adjacency_matrix(mol, is_self_loop=False)
     e = MOLTOGRAPH.mol_to_edge_feature_matrix(mol, include_extra=False)
     N = adj.shape[0]

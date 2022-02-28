@@ -3,7 +3,7 @@ import time
 import random
 import tqdm
 from copy import deepcopy
-import torch
+
 import rdkit
 from rdkit import Chem
 from rdkit.Chem import AllChem

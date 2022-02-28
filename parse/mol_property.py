@@ -2,9 +2,11 @@ import random
 import math 
 import numpy as np 
 from tqdm import tqdm
+
 import torch
 import torch.nn as nn
 from torch.utils.data import Dataset
+
 from rdkit import Chem
 from rdkit.Chem.AllChem import GetAdjacencyMatrix
 from rdkit.Chem.Descriptors import MaxPartialCharge, MinPartialCharge, \
