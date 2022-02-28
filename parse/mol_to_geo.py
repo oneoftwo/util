@@ -31,13 +31,16 @@ def mol_to_pos(mol):
     return x
 
 
-def mol_to_data(mol):
+def mol_to_data(mol, is_pos=False):
     mol = RemoveHs(mol)
     x = MOLTOGRAPH.mol_to_node_feature_matrix(mol)
     x = torch.Tensor(x)
     edge_index, edge_attr = mol_to_edge_index_and_edge_attr(mol)
-    pos = mol_to_pos(mol)
-    data = Data(x=x, edge_index=edge_index, edge_attr=edge_attr, pos=pos)
+    if pos:
+        pos = mol_to_pos(mol)
+        data = Data(x=x, edge_index=edge_index, edge_attr=edge_attr, pos=pos)
+    else:
+        data = Data(x=x, edge_index=edge_index, edge_attr=edge_attr)
     return data
 
 
