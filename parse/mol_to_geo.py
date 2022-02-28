@@ -34,7 +34,7 @@ def mol_to_pos(mol):
     return x
 
 
-def mol_to_data(mol, is_pos=False):
+def mol_to_data(mol, pos=False):
     mol = RemoveHs(mol)
     x = MOLTOGRAPH.mol_to_node_feature_matrix(mol)
     x = torch.Tensor(x)
