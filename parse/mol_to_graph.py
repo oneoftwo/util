@@ -22,26 +22,35 @@ from rdkit.Chem.Lipinski import NumRotatableBonds, NumHAcceptors, \
 
 def _get_atom_feature(atom):
     symbol = _one_of_k_encoding_unk(atom.GetSymbol(), \
-            ['C', 'N', 'O', 'S', 'F', 'P', 'Cl', 'Br', 'I'])
-    degree = _one_of_k_encoding_unk(atom.GetDegree(), [0, 1, 2, 3, 4, 5])
-    num_h = _one_of_k_encoding_unk(atom.GetTotalNumHs(), [0, 1, 2, 3, 4, 5])
-    valance = _one_of_k_encoding_unk(atom.GetImplicitValence(), [0, 1, 2, 3, 4])
+            ['C', 'N', 'O', 'S', 'F', 'P', 'Cl', 'Br', 'I', 'ELSE'])
+
+    degree = _one_of_k_encoding_unk(atom.GetDegree(), [0, 1, 2, 3, 4, 'ELSE'])
+
+    num_h = _one_of_k_encoding_unk(atom.GetTotalNumHs(), [0, 1, 2, 3, 4, 'ELSE'])
+
+    valance = _one_of_k_encoding_unk(atom.GetImplicitValence(), [0, 1, 2, 3, 'ELSE'])
+
     formal_charge = _one_of_k_encoding_unk(atom.GetFormalCharge(), \
-            [-2, -1, 0, 1, 2, 3, 4])
+            [-2, -1, 0, 1, 2, 3, 'ELSE'])
+
     hybrdiation = _one_of_k_encoding_unk(atom.GetHybridization(), \
             [Chem.rdchem.HybridizationType.S, Chem.rdchem.HybridizationType.SP, \
             Chem.rdchem.HybridizationType.SP2, Chem.rdchem.HybridizationType.SP3, \
             Chem.rdchem.HybridizationType.SP3D, Chem.rdchem.HybridizationType.SP3D2, \
             Chem.rdchem.HybridizationType.UNSPECIFIED])
+
     chiral = _one_of_k_encoding_unk(atom.GetChiralTag(), \
             [Chem.rdchem.ChiralType.CHI_UNSPECIFIED, \
             Chem.rdchem.ChiralType.CHI_TETRAHEDRAL_CCW, \
             Chem.rdchem.ChiralType.CHI_TETRAHEDRAL_CW, \
             Chem.rdchem.ChiralType.CHI_OTHER])
-    rdfing_size = [atom.IsInRingSize(i) for i in range(3, 10)]
+
+    rdfing_size = [atom.IsInRingSize(i) for i in range(3, 9)]
+
     is_aromatic = [atom.GetIsAromatic()]
+
     output = []
-    output += symbol
+    output += symbol # 9
     output += num_h 
     output += valance 
     output += formal_charge 
@@ -49,6 +58,7 @@ def _get_atom_feature(atom):
     output += chiral 
     output += rdfing_size 
     output += is_aromatic
+
     return output # total 67 degree
 
 
@@ -121,5 +131,9 @@ def mol_to_adjacency_matrix(mol, is_self_loop=False):
 
 
 if __name__ == '__main__':
-    pass
+    from rdkit import Chem
+    mol = Chem.MolFromSmiles('CNF')
+    a = mol_to_node_feature_matrix(mol)
+    print(a.shape)
+    pass 
 
