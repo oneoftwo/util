@@ -16,3 +16,6 @@ def overwrite_dir(dir_str):
     return dir_str
 
 
+if __name__ == '__main__':
+    pass 
+

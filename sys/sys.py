@@ -1,10 +1,9 @@
-import numpy as np
-import random
-from rdkit import Chem
-from rdkit.Chem.EnumerateStereoisomers import EnumerateStereoisomers
 
 
 def set_cuda_visible_devices(ngpus, is_print=True):
+    """ 
+    set cuda visible devices environment
+    """
     import subprocess
     import os
     import numpy as np

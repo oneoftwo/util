@@ -1,2 +1,2 @@
-# Utilities for cheminformatics
+# utilities for cheminformatics
 
