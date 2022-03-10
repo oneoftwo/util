@@ -48,19 +48,24 @@ class GraphConvolutionBlock(nn.Module):
         self.n_layer, self.residual_connection = n_layer, residual_connection
         self.activate_last = activate_last
         self.h_dim = h_dim
-        self.graph_convolution = nn.ModuleList([GraphConvolutionLayer(h_dim) for _ in range(n_layer)])
+        self.graph_convolution = nn.ModuleList([GraphConvolutionLayer(h_dim) \
+                for _ in range(n_layer)])
         if self.residual_connection == 'attention':
             self.attention_network = nn.Linear(h_dim, 1)
 
     def forward(self, h, adj):
         b, N = h.size(0), h.size(1)
+        
         h_ori = h
         for layer in self.graph_convolution[:-1]:
             h = layer(h, adj)
             h = F.relu(h)
         h = self.graph_convolution[-1](h, adj)
+
         # residual connection or skip connection method
-        if self.residual_connection == 'add':
+        if self.residual_connection == 'none':
+            pass 
+        elif self.residual_connection == 'add':
             h = h + h_ori
         elif self.residual_connection == 'attention':
             h_ori_mean = h_ori.mean(dim=1)
@@ -68,8 +73,10 @@ class GraphConvolutionBlock(nn.Module):
             alpha = torch.sigmoid(alpha).squeeze(1)
             alpha = alpha.unsqueeze(1).unsqueeze(2).repeat(1, N, self.h_dim)
             h = alpha * h + (1 - alpha) * h_ori
+
         if self.activate_last:
             h = F.relu(h)
+
         return h
     
 
@@ -87,8 +94,6 @@ class EGNNLayer(nn.Module):
 
 class EGNNBlock(nn.Module):
     pass
-
-
 
     
 h = torch.rand(3, 5, 7)

@@ -1,5 +1,6 @@
 import os
 
+
 def set_cuda_visible_devices(ngpus, is_print=True):
     """ 
     set cuda visible devices environment
