@@ -1,2 +1,2 @@
-# utilities for cheminformatics
+# personal util
 
