@@ -35,7 +35,7 @@ class MPNNBlock(torch.nn.Module):
         self.activate_last = activate_last
         self.residual_connection = residual_connection
         self.h_dim, self.e_dim = h_dim, e_dim
-        self.layer_list = torch.nn.ModuleList([MPNNLayer(h_dim, e_dim) for _ in n_layer])
+        self.layer_list = torch.nn.ModuleList([MPNNLayer(h_dim, e_dim) for _ in range(n_layer)])
 
     def forward(self, x, edge_index, edge_attr):
         x_ori = x
