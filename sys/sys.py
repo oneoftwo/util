@@ -27,7 +27,7 @@ def set_cuda_visible_devices(ngpus, is_print=True):
         cmd+=str(empty[i])+','
     os.environ['CUDA_VISIBLE_DEVICES'] = cmd
     if is_print:
-        print('cuda device set as {cmd[:-1]}')
+        print(f'cuda device set as {cmd[:-1]}')
     return None
 
 
