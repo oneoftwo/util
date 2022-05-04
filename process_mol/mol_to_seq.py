@@ -2,14 +2,13 @@ import numpy as np
 from rdkit import Chem
 import random
 
-
 a = 'CC(=O)NCCC1=CNc2c1cc(OC)cc2'
-# a = 'CN=CO'
 m = Chem.MolFromSmiles(a)
 
 
 def get_all_possible_smiles(m):
     """ 
+    !!! takes time
     get all possible (mostly) smiles for given mol 
     input:
         m: mol object
@@ -50,9 +49,8 @@ def get_random_smiles(mol, kekulize=False, isomeric=False, \
 
 
 def smiles_to_seq(smiles, c_to_i, make_cannonical=False):
-    if cannonical:
+    if make_cannonical:
         smiles = Chem.MolToSmiles(Chem.MolFromSmiles(smiles))
-
     seq = []
     for char in smiles:
         if char in c_to_i:
