@@ -43,8 +43,11 @@ def smiles_to_seq(smiles, c_to_i, make_cannonical=False):
 
     seq = []
     for char in smiles:
-        i = c_to_i.index(char)
-        seq.append(i)
+        if char in c_to_i:
+            i = c_to_i.index(char)
+            seq.append(i)
+        else:
+            seq.append(len(c_to_i))
     seq = np.array(seq)
     return smiles, seq
 
