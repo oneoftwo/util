@@ -29,11 +29,23 @@ def get_all_possible_smiles(m):
     return smiles_list
 
 
-def get_random_smiles(m):
+def get_random_smiles(mol, kekulize=False, isomeric=False, \
+        explicit_bond=False, explicit_H=False):
     """ 
     get random smiles (non cannonical) from mol
     """
-    smiles = Chem.MolToSmiles(m, doRandom=True)
+    if kekulize:
+        kekulize = bool(random.randint(0, 1))
+    if isomeric:
+        isomeric = bool(random.randint(0, 1))
+    if explicit_bond:
+        allBondsExplicit = bool(random.randint(0, 1))
+    if explicit_H:
+        allHsExplicit = bool(random.randint(0, 1))
+
+    smiles = Chem.MolToSmiles(mol, doRandom=True, kekuleSmiles=kekulize, \
+            isomericSmiles=isomeric, allBondsExplicit=allBondsExplicit, \
+            allHsExplicit=allHsExplicit)
     return smiles
 
 
@@ -62,4 +74,10 @@ def update_c_to_i(smiles_list, c_to_i=[], make_cannonical=False):
                 c_to_i.append(char)
     return c_to_i
 
+
+
+if __name__ == '__main__':
+    smiles = a
+    for _ in range(10):
+        print(get_random_smiles(Chem.MolFromSmiles(smiles), kekulize=True, isomeric=True, explicit_bond=True, explicit_H=True))
 
