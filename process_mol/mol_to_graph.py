@@ -3,10 +3,6 @@ import math
 import numpy as np 
 from tqdm import tqdm
 
-import torch
-import torch.nn as nn
-from torch.utils.data import Dataset
-
 from rdkit import Chem
 from rdkit.Chem.AllChem import GetAdjacencyMatrix
 from rdkit.Chem.Descriptors import MaxPartialCharge, MinPartialCharge, \
@@ -22,7 +18,7 @@ from rdkit.Chem.Lipinski import NumRotatableBonds, NumHAcceptors, \
 
 def _get_atom_feature(atom):
     symbol = _one_of_k_encoding_unk(atom.GetSymbol(), \
-            ['C', 'N', 'O', 'S', 'F', 'P', 'Cl', 'Br', 'I', 'ELSE'])
+            ['C', 'N', 'O', 'F', 'P', 'S', 'Cl', 'Br', 'I', 'ELSE'])
 
     degree = _one_of_k_encoding_unk(atom.GetDegree(), [0, 1, 2, 3, 4, 'ELSE'])
 
@@ -31,7 +27,7 @@ def _get_atom_feature(atom):
     valance = _one_of_k_encoding_unk(atom.GetImplicitValence(), [0, 1, 2, 3, 'ELSE'])
 
     formal_charge = _one_of_k_encoding_unk(atom.GetFormalCharge(), \
-            [-2, -1, 0, 1, 2, 3, 'ELSE'])
+            [-2, -1, 0, 1, 2, 'ELSE'])
 
     hybrdiation = _one_of_k_encoding_unk(atom.GetHybridization(), \
             [Chem.rdchem.HybridizationType.S, Chem.rdchem.HybridizationType.SP, \
@@ -51,6 +47,7 @@ def _get_atom_feature(atom):
 
     output = []
     output += symbol # 9
+    output += degree
     output += num_h 
     output += valance 
     output += formal_charge 
@@ -59,12 +56,13 @@ def _get_atom_feature(atom):
     output += rdfing_size 
     output += is_aromatic
 
-    return output # total 67 degree
+    return output
 
 
 # make one of k encoding block
 def _one_of_k_encoding_unk(x, allowable_set):
-    """Maps inputs not in the allowable set to the last element."""
+    """Maps inputs not in the allowable set to the last element.
+    The last element of allowable set is ELSE"""
     if x not in allowable_set:
         x = allowable_set[-1]
     return list(map(lambda s: x == s, allowable_set))
@@ -72,7 +70,7 @@ def _one_of_k_encoding_unk(x, allowable_set):
 
 # mol to edge feature matrix
 def mol_to_edge_feature_matrix(mol, include_extra=True):
-    n_bond_features = 5
+    n_bond_features = 6
     if include_extra:
         n_extra_bond_features = 6
     else:
@@ -94,21 +92,18 @@ def mol_to_edge_feature_matrix(mol, include_extra=True):
 
 def _get_bond_feature(bond, include_extra=False):
     bt = bond.GetBondType()  # rdkit.Chem.BondType
-    retval = [
-      bt == Chem.rdchem.BondType.SINGLE, bt == Chem.rdchem.BondType.DOUBLE,
-      bt == Chem.rdchem.BondType.TRIPLE, bt == Chem.rdchem.BondType.AROMATIC,
-      0 # no bond
-      #bond.GetIsConjugated(),
-      #bond.IsInRing()
-      ]
+    retval = [bt==Chem.rdchem.BondType.SINGLE, \
+            bt==Chem.rdchem.BondType.DOUBLE, bt==Chem.rdchem.BondType.TRIPLE, \
+            bt==Chem.rdchem.BondType.AROMATIC, bond.GetIsConjugated(), \
+            bond.IsInRing()]
     if include_extra:
         bs = bond.GetStereo()
-        retval += [bs == Chem.rdchem.BondStereo.STEREONONE,
-                   bs == Chem.rdchem.BondStereo.STEREOANY,
-                   bs == Chem.rdchem.BondStereo.STEREOZ,
-                   bs == Chem.rdchem.BondStereo.STEREOE,
-                   bs == Chem.rdchem.BondStereo.STEREOCIS,
-                   bs == Chem.rdchem.BondStereo.STEREOTRANS]
+        retval += [bs==Chem.rdchem.BondStereo.STEREONONE,
+                   bs==Chem.rdchem.BondStereo.STEREOANY,
+                   bs==Chem.rdchem.BondStereo.STEREOZ,
+                   bs==Chem.rdchem.BondStereo.STEREOE,
+                   bs==Chem.rdchem.BondStereo.STEREOCIS,
+                   bs==Chem.rdchem.BondStereo.STEREOTRANS]
     return np.array(retval)
 
 
@@ -133,7 +128,7 @@ def mol_to_adjacency_matrix(mol, is_self_loop=False):
 if __name__ == '__main__':
     from rdkit import Chem
     mol = Chem.MolFromSmiles('CNF')
-    a = mol_to_node_feature_matrix(mol)
-    print(a.shape)
-    pass 
-
+    h = mol_to_node_feature_matrix(mol)
+    e = mol_to_edge_feature_matrix(mol)
+    adj = mol_to_adjacency_matrix(mol)
+    print(h.shape, e.shape, adj.shape)

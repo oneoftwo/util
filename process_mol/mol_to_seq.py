@@ -1,6 +1,8 @@
 import numpy as np
+import random 
+
 from rdkit import Chem
-import random
+
 
 a = 'CC(=O)NCCC1=CNc2c1cc(OC)cc2'
 m = Chem.MolFromSmiles(a)

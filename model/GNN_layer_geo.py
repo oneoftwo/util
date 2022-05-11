@@ -19,7 +19,7 @@ class EGNNLayer(torch_geometric.nn.MessagePassing):
         x = self._update_x(x, edge_index, m_ij)
         return x, pos
 
-    def _make_message(self, x, pos, edge_index, edge_atttr):
+    def _make_message(self, x, pos, edge_index, edge_attr):
         x_i = x[edge_index[0]]
         x_j = x[edge_index[1]]
         pos_i = x[edge_index[0]]
@@ -64,7 +64,7 @@ class EGNNBlock(torch.nn.Module):
         self.h_dim, self.e_dim, self.hid_dim = h_dim, e_dim, hid_dim 
         self.layer_list = torch.nn.ModuleList([EGNNLayer(h_dim, e_dim, hid_dim) for _ in range(n_layer)])
 
-    def forward(self, x, pos, edge_idnex, edge_attr):
+    def forward(self, x, pos, edge_index, edge_attr):
         x_ori, pos_ori = x, pos
         for layer in self.layer_list:
             x, pos = layer(x, pos, edge_index, edge_attr)
@@ -125,12 +125,8 @@ if __name__ == '__main__':
     edge_index = torch.Tensor([[0,0], [0, 1], [1, 0], [2, 3], [3, 2]]).long().t()
     edge_attr = torch.rand(5, 6)
     
-    mpnn_layer = MPNNLayer(h_dim=11, e_dim=6)
-    mpnn_layer(x, edge_index, edge_attr)
-
     egnn_layer = EGNNBlock(h_dim=11, e_dim=6, hid_dim=128, n_layer=3)
     x, pos = egnn_layer(x, pos, edge_index, edge_attr)
     print(pos.size())
-
 
 
