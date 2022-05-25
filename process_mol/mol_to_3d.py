@@ -54,11 +54,24 @@ def mol_to_distance_matrix(mol):
     return d
 
 
+def mol_mol_to_distacne_matrix(mol_1, mol_2):
+    pos_1 = mol_to_position_matrix(mol_1)
+    pos_2 = mol_to_position_matrix(mol_2) 
+    d = np.zeros([len(pos_1), len(pos_2)])
+    for i in range(len(pos_1)):
+        for j in range(len(pos_2)):
+            d[i, j] = np.linalg.norm(pos_1[i] - pos_2[j])
+    return d
+
+
 if __name__ == '__main__':
-    m = Chem.MolFromSmiles('CCOC')
-    mol_out = optimize_mol_position(m)
-    m = mol_to_position_matrix(mol_out)
-    print(m)
-    d = mol_to_distance_matrix(mol_out)
+    m_1 = Chem.MolFromSmiles('CC')
+    m_2 = Chem.MolFromSmiles('CC')
+    m_3 = Chem.MolFromSmiles('CC')
+    m_1 = optimize_mol_position(m_1)
+    m_2 = optimize_mol_position(m_2)
+    m_3 = optimize_mol_position(m_3)
+    
+    d = mol_mol_to_distacne_matrix(m_1, m_3)
     print(d)
 

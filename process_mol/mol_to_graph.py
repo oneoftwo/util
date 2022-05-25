@@ -132,3 +132,4 @@ if __name__ == '__main__':
     e = mol_to_edge_feature_matrix(mol)
     adj = mol_to_adjacency_matrix(mol)
     print(h.shape, e.shape, adj.shape)
+

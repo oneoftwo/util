@@ -65,7 +65,10 @@ def smiles_to_seq(smiles, c_to_i, make_cannonical=False):
 
 
 def update_c_to_i(smiles_list, c_to_i=[], make_cannonical=False):
-    if cannonical:
+    """ 
+    search all smiles from smiles list and add chars not included in c_to_i
+    """
+    if make_cannonical:
         smiles = Chem.MolToSmiles(Chem.MolFromSmiles(smiles))
 
     for smiles in smiles_list:
