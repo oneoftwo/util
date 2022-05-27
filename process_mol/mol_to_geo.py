@@ -52,11 +52,46 @@ def mol_to_data(mol, pos=False):
     return data
 
 
+def merge_graph(graph_1, graph_2):
+    """ 
+    merge graph (graph_1 - graph_2) index shift 
+    """
+    print(graph_1)
+    print(graph_2)
+    idx_shift = len(graph_1.x)
+    print(idx_shift)
+
+    x_1, edge_index_1 = graph_1.x, graph_1.edge_index
+    x_2, edge_index_2 = graph_2.x, graph_2.edge_index
+
+    x = np.concatenate([x_1, x_2], axis=0)
+    edge_index_2 = edge_index_2 + idx_shift 
+    edge_index = np.concatenate([edge_index_1, edge_index_2], axis=1)
+    
+    try:
+        edge_attr_1 = graph_1.edge_attr
+        edge_attr_2 = graph_2.edge_attr
+        edge_attr = np.concatenate([edge_attr_1, edge_attr_2], axis=0)
+    except:
+        pass 
+
+    try:
+        pos_1 = graph_1.pos 
+        pos_2 = graph_2.pos
+        pos = np.concatenate([pos_1, pos_2], axis=0)
+    except:
+        pass
+
+    graph = Data(x=x, edge_index=edge_index, edge_attr=edge_attr, pos=pos)
+    graph.seperate_index = [idx_shift, len(x) - idx_shift]
+    return graph
+ 
+    
 if __name__ == '__main__':
     mol = Chem.MolFromSmiles('CNCC')
-    data = mol_to_data(mol, pos=True)
-    print(data.x)
-    print(data.edge_index)
-    print(data.edge_attr)
-    print(data.pos)
+    graph_1 = mol_to_data(mol, pos=True)
+    mol = Chem.MolFromSmiles('CC')
+    graph_2 = mol_to_data(mol, pos=True)
+    graph = merge_graph(graph_1, graph_2)
+    print(graph)
 
