@@ -1,9 +1,7 @@
-import sklearn
-
+import os, sys
 
 def count_learnable_parameters(model):
-    num_param = sum(p.numel() \
-            for p in model.parameters() if p.requires_grad)
+    num_param = sum(p.numel() for p in model.parameters() if p.requires_grad)
     return num_param
 
 
@@ -36,6 +34,6 @@ def calc_prc_auc(score, true):
     from sklearn.metrics import auc
     from sklearn.metrics import precision_recall_curve
     p, r, ths = precision_recall_curve(true, score)
-    asdf = auc(r, p)
-    return asdf
+    prc_auc = auc(r, p)
+    return prc_auc
 
